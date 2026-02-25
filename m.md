@@ -25,3 +25,29 @@
         GameOver --> UpdateElo: Calculate points
         UpdateElo --> [*]
 ```
+
+```mermaid
+    stateDiagram-v2
+        [*] --> Lobby: Player clicks Invite Link
+        Lobby --> Matchmaking: Check Elo & Game Mode
+        Matchmaking --> GameStart: Opponent Found
+        
+        state GameStart {
+            [*] --> Player_Turn
+            
+            Player_Turn --> ValidateMove: Player clicks cell
+            ValidateMove --> Player_Turn: Invalid Move
+            ValidateMove --> UpdateState: Valid Move
+            
+            UpdateState --> EvaluateAccuracy: Run Minimax in bg
+            EvaluateAccuracy --> CheckWinCondition: Save move delta
+            
+            CheckWinCondition --> DetermineNextGrid: Game Continues
+            DetermineNextGrid --> Player_Turn: Swap Player
+        }
+        
+        CheckWinCondition --> GameOver: SuperBoard Won or Draw
+        GameOver --> CalculateAccuracy: Aggregate move deltas
+        CalculateAccuracy --> UpdateElo: Apply Elo + Accuracy math
+        UpdateElo --> [*]
+```
